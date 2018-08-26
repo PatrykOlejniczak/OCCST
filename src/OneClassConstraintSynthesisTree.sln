@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2042
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCCST.Tests", "OCCST.Tests\OCCST.Tests.csproj", "{32467C71-5C68-46C5-B25D-6AD670F1221A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCCST", "OCCST\OCCST.csproj", "{68331CDC-2C5A-4150-831C-1CEA4AB12EAB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{32467C71-5C68-46C5-B25D-6AD670F1221A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32467C71-5C68-46C5-B25D-6AD670F1221A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32467C71-5C68-46C5-B25D-6AD670F1221A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32467C71-5C68-46C5-B25D-6AD670F1221A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68331CDC-2C5A-4150-831C-1CEA4AB12EAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68331CDC-2C5A-4150-831C-1CEA4AB12EAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68331CDC-2C5A-4150-831C-1CEA4AB12EAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68331CDC-2C5A-4150-831C-1CEA4AB12EAB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9E132A73-F873-484F-90A3-97D2112810BC}
+	EndGlobalSection
+EndGlobal
