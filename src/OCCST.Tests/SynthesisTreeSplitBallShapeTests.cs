@@ -7,7 +7,7 @@ using OCCST.Models;
 namespace OCCST.Tests
 {
     [TestClass]
-    public class SynthesisTreeSplitTests
+    public class SynthesisTreeSplitBallShapeTests
     {
         private DecisionVariable[] attributes;
         private double[][] learn;
@@ -37,10 +37,13 @@ namespace OCCST.Tests
 
             learn = new[]
             {
-                new double[] { 2, 3 }, new double[] { 2, 4 }, new double[] { 2, 5 }, new double[] { 2, 6 },
-                new double[] { 3, 3 }, new double[] { 3, 4 }, new double[] { 3, 5 }, new double[] { 3, 6 },
-                                       new double[] { 4, 4 }, new double[] { 4, 5 }, new double[] { 4, 6 },
-                                       new double[] { 5, 4 }, new double[] { 5, 5 }, new double[] { 5, 6 }
+                                                                                                            new double[] { 1, 5 },
+                                                                                     new double[] { 2, 4 }, new double[] { 2, 5 }, new double[] { 2, 6 },
+                                                              new double[] { 3, 3 }, new double[] { 3, 4 }, new double[] { 3, 5 }, new double[] { 3, 6 }, new double[] { 3, 7 },
+                                                              new double[] { 4, 3 }, new double[] { 4, 4 }, new double[] { 4, 5 }, new double[] { 4, 6 }, new double[] { 4, 7 },
+                                                              new double[] { 5, 3 }, new double[] { 5, 4 }, new double[] { 5, 5 }, new double[] { 5, 6 }, new double[] { 5, 7 },
+                                                                                     new double[] { 6, 4 }, new double[] { 6, 5 }, new double[] { 6, 6 },
+                                                                                                            new double[] { 7, 5 },
             };
         }
 
@@ -58,7 +61,7 @@ namespace OCCST.Tests
             Assert.AreEqual(1, tree.Root.Branches[0].Branches.Count);
             Assert.AreEqual(1, tree.Root.Branches[0].Branches[0].Branches.Count);
             Assert.AreEqual(1, tree.Root.Branches[0].Branches[0].Branches[0].Branches.Count);
-            Assert.AreEqual(14, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Output);
+            Assert.AreEqual(learn.Length, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Output);
             Assert.IsTrue(tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].IsLeaf);
         }
 
@@ -76,8 +79,8 @@ namespace OCCST.Tests
             Assert.AreEqual(1, tree.Root.Branches[0].Branches.Count);
             Assert.AreEqual(1, tree.Root.Branches[0].Branches[0].Branches.Count);
             Assert.AreEqual(1, tree.Root.Branches[0].Branches[0].Branches[0].Branches.Count);
-            Assert.AreEqual(12, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Output);
-            Assert.AreEqual(2, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Output);
+            Assert.AreEqual(22, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Output);
+            Assert.AreEqual(1, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Output);
         }
 
         [TestMethod]
@@ -94,9 +97,9 @@ namespace OCCST.Tests
             Assert.AreEqual(1, tree.Root.Branches[0].Branches.Count);
             Assert.AreEqual(1, tree.Root.Branches[0].Branches[0].Branches.Count);
             Assert.AreEqual(1, tree.Root.Branches[0].Branches[0].Branches[0].Branches.Count);
-            Assert.AreEqual(12, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Output);
-            Assert.AreEqual(0, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Branches[0].Output);
-            Assert.AreEqual(2, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Branches[1].Output);
+            Assert.AreEqual(4, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Output);
+            Assert.AreEqual(18, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Output);
+            Assert.AreEqual(1, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Output);
         }
     }
 }
