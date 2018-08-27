@@ -11,9 +11,9 @@ namespace OCCST.Algorithm.Models
         public double Probability { get; }
         public double MeasureValue { get; }
 
-        public SplitInformation(double[] inputs, double[] validateInputs, int validationInputsTotalCount, ComparisonKind comparisonKind, double splitValue)
+        public SplitInformation(double[] inputs, double[] validateInputs, int validationInputsTotalCount, ComparisonKind comparisonKind, double splitValue, int learn)
         {
-            var validationPositives = validateInputs.Verify(comparisonKind, splitValue);
+            var validationPositives = validateInputs.GetVeryfiedCount(comparisonKind, splitValue);
 
             ConfusionMatrix = new ObjectFromTargetClass(inputs, comparisonKind, splitValue);
             if (ConfusionMatrix.TruePositives == 0 || validationPositives == 0)
@@ -25,7 +25,7 @@ namespace OCCST.Algorithm.Models
             }
 
             RecallValue
-                = StatisticsCalculator.CalculateRecall(ConfusionMatrix);
+                = (double)ConfusionMatrix.TruePositives / learn;
             Probability
                 = (double)validationPositives / validationInputsTotalCount;
             MeasureValue

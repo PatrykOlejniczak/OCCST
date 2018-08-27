@@ -129,7 +129,7 @@
     <Compile Include="Algorithm\Models\SplitDecisionNode.cs" />
     <Compile Include="Algorithm\Models\SplitInformation.cs" />
     <Compile Include="Algorithm\Models\SuggestSplitPoint.cs" />
-    <Compile Include="Algorithm\SynthesisTree.cs" />
+    <Compile Include="Algorithm\SynthesisTreeLearn.cs" />
     <Compile Include="Algorithm\Calculators\ThresholdsCalculator.cs" />
     <Compile Include="Extensions\ArrayExtensions.cs" />
     <Compile Include="Extensions\ComparisonKindExtensions.cs" />

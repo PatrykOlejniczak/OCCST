@@ -16,7 +16,7 @@ namespace OCCST.Algorithm.Calculators
 
         public ObjectFromTargetClass(double[] inputs, ComparisonKind comparisonKind, double comparisonConstant)
         {
-            TruePositives = inputs.Verify(comparisonKind, comparisonConstant);
+            TruePositives = inputs.GetVeryfiedCount(comparisonKind, comparisonConstant);
             FalseNegatives = inputs.Length - TruePositives;
         }
     }

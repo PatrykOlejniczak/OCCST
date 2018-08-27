@@ -6,12 +6,12 @@ namespace OCCST.Extensions
 {
     public static class ArrayExtensions
     {
-        public static int Verify(this double[] inputs, ComparisonKind comparisonKind, double comparisonConstant)
+        public static int GetVeryfiedCount(this double[] inputs, ComparisonKind comparisonKind, double comparisonConstant)
         {
             return inputs.Count(input => comparisonKind.Check(input, comparisonConstant));
         }
 
-        public static double[] Remove(this double[] array, ComparisonKind comparisonKind, double comparisonConstant)
+        public static double[] GetVeryfied(this double[] array, ComparisonKind comparisonKind, double comparisonConstant)
         {
             var corrects = new List<double>();
 

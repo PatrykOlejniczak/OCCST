@@ -3,42 +3,38 @@ using Accord.Math;
 using OCCST.Algorithm.Calculators;
 using OCCST.Algorithm.Models;
 using OCCST.Extensions;
-using System.Collections.Generic;
-using System.Linq;
 using OCCST.Models;
 
 namespace OCCST.Algorithm
 {
-    public class SynthesisTree
+    public class SynthesisTreeLearn
     {
-        public DecisionTree DecisionTree { get; private set; }
+        public DecisionTree Tree { get; }
 
-        private IList<DecisionVariable> attributes;
-        private int validationInputsTotalCount;
+        private double[][] learn;
+        private double[][] validation;
 
-        public SynthesisTree(DecisionVariable[] attributes)
+        public SynthesisTreeLearn(DecisionVariable[] attributes, double[][] learn, double[][] validation)
         {
-            this.attributes = attributes;
+            this.learn = learn;
+            this.validation = validation;
+
+            if (Tree == null)
+            {
+                Tree = new DecisionTree(attributes, 2);
+            }
         }
 
-        public DecisionTree Learn(double[][] learnInputs, int[] learnOutputs, double[][] validationInputs)
+        public DecisionTree Learn()
         {
-            validationInputsTotalCount = validationInputs.Length;
+            Run(learn.Copy(), validation.Copy());
 
-            if (DecisionTree == null)
-            {
-                DecisionTree = new DecisionTree(attributes, learnOutputs.Max() + 1);
-                attributes = DecisionTree.Attributes;
-            }
-
-            Run(learnInputs, validationInputs);
-
-            return DecisionTree;
+            return Tree;
         }
 
         private void Run(double[][] inputs, double[][] validationInputs)
         {
-            var root = DecisionTree.Root = new DecisionNode(DecisionTree);
+            var root = Tree.Root = new DecisionNode(Tree);
             var thresholds = ThresholdsCalculator.Calculate(inputs);
 
             for (int attributeIndex = 0; attributeIndex < GlobalVariables.Dimensions; attributeIndex++)
@@ -50,9 +46,10 @@ namespace OCCST.Algorithm
 
                 var minSplitInformation = new SplitInformation(inputs.GetColumn(attributeIndex),
                                                                validationInputs.GetColumn(attributeIndex),
-                                                               validationInputsTotalCount,
+                                                               validation.Length,
                                                                ComparisonKind.GreaterThan,
-                                                               min);
+                                                               min,
+                                                               learn.Length);
 
                 var minSplit = new SuggestSplitPoint(attributeIndex,
                                                      ComparisonKind.GreaterThan,
@@ -60,7 +57,7 @@ namespace OCCST.Algorithm
                                                      minSplitInformation,
                                                      null);
 
-                var minNode = new SplitDecisionNode(DecisionTree, root, minSplit.Left,
+                var minNode = new SplitDecisionNode(Tree, root, minSplit.Left,
                                                     minSplit.ComparisonKind, minSplit.SplitValue, attributeIndex);
 
                 inputs = inputs.CutRowByColumnValue(attributeIndex, ComparisonKind.GreaterThan, min);
@@ -77,16 +74,17 @@ namespace OCCST.Algorithm
 
                 var maxSplitInformation = new SplitInformation(inputs.GetColumn(attributeIndex),
                                                                validationInputs.GetColumn(attributeIndex),
-                                                               validationInputsTotalCount,
+                                                               validation.Length,
                                                                ComparisonKind.LessThan,
-                                                               max);
+                                                               max,
+                                                               learn.Length);
 
                 var maxSplit = new SuggestSplitPoint(attributeIndex,
                                                      ComparisonKind.LessThan,
                                                      max,
                                                      maxSplitInformation);
 
-                var maxNode = new SplitDecisionNode(DecisionTree, root, maxSplit.Left,
+                var maxNode = new SplitDecisionNode(Tree, root, maxSplit.Left,
                                                     maxSplit.ComparisonKind, maxSplit.SplitValue, attributeIndex);
 
                 inputs = inputs.CutRowByColumnValue(attributeIndex, ComparisonKind.LessThan, max);
@@ -97,13 +95,7 @@ namespace OCCST.Algorithm
                 root = maxNode;
             }
 
-            int[] attributeUsage = null;
-            if (GlobalVariables.GrowCondition.MaxAttributeUsage.HasValue)
-            {
-                attributeUsage = Enumerable.Repeat(GlobalVariables.GrowCondition.MaxAttributeUsage.Value, attributes.Count - 1).ToArray();
-            }
-
-            Split(root, inputs, validationInputs, thresholds, root.GetHeight(), attributeUsage);
+            Split(root, inputs, validationInputs, thresholds, root.GetHeight(), null);
         }
 
         private void Split(DecisionNode root, double[][] inputs, double[][] validationInputs, double[][] thresholds, int height, int[] attributeUsage)
@@ -124,16 +116,18 @@ namespace OCCST.Algorithm
                     var splitInformationLeft
                             = new SplitInformation(inputs.GetColumn(thresholdAttribute),
                                                    validationInputs.GetColumn(thresholdAttribute),
-                                                   validationInputsTotalCount,
+                                                   validation.Length,
                                                    comparisonKind,
-                                                   thresholds[thresholdAttribute][thresholdIndex]);
+                                                   thresholds[thresholdAttribute][thresholdIndex],
+                                                   learn.Length);
 
                     var splitInformationRight
                             = new SplitInformation(inputs.GetColumn(thresholdAttribute),
                                 validationInputs.GetColumn(thresholdAttribute),
-                                validationInputsTotalCount,
+                                validation.Length,
                                 comparisonKind.GetOpposed(),
-                                thresholds[thresholdAttribute][thresholdIndex]);
+                                thresholds[thresholdAttribute][thresholdIndex],
+                                learn.Length);
 
                     var localBestSplitPoint = new SuggestSplitPoint(thresholdAttribute,
                                                                     comparisonKind,
@@ -141,38 +135,17 @@ namespace OCCST.Algorithm
                                                                     splitInformationLeft,
                                                                     splitInformationRight);
 
-                    if (GlobalVariables.GrowCondition.MinParentSizePercent.HasValue)
+
+                    var parentSize = splitInformationLeft.ConfusionMatrix.TruePositives
+                                     + splitInformationRight.ConfusionMatrix.TruePositives;
+
+                    if (parentSize <= 1)
+                        continue;
+
+                    if (suggestSplitPoint == null
+                        || localBestSplitPoint.IsBetterThan(suggestSplitPoint))
                     {
-                        var parentSize = splitInformationLeft.ConfusionMatrix.TruePositives
-                                            + splitInformationRight.ConfusionMatrix.TruePositives;
-
-                        if (parentSize == 0)
-                            continue;
-
-                        var minSize = (double)GlobalVariables.GrowCondition.MinParentSizePercent * parentSize / 100;
-                        if (splitInformationLeft.ConfusionMatrix.TruePositives > minSize
-                                && splitInformationRight.ConfusionMatrix.TruePositives > minSize)
-                        {
-                            if (suggestSplitPoint == null
-                                || localBestSplitPoint.IsBetterThan(suggestSplitPoint))
-                            {
-                                suggestSplitPoint = localBestSplitPoint;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var parentSize = splitInformationLeft.ConfusionMatrix.TruePositives
-                                         + splitInformationRight.ConfusionMatrix.TruePositives;
-
-                        if (parentSize == 0 || parentSize == 1)
-                            continue;
-
-                        if (suggestSplitPoint == null
-                            || localBestSplitPoint.IsBetterThan(suggestSplitPoint))
-                        {
-                            suggestSplitPoint = localBestSplitPoint;
-                        }
+                        suggestSplitPoint = localBestSplitPoint;
                     }
                 }
             }
@@ -195,8 +168,8 @@ namespace OCCST.Algorithm
 
             var children = new[]
                             {
-                                new SplitDecisionNode(DecisionTree, root, suggestSplitPoint.Left, suggestSplitPoint.ComparisonKind, suggestSplitPoint.SplitValue, suggestSplitPoint.AttributeIndex),
-                                new SplitDecisionNode(DecisionTree, root, suggestSplitPoint.Right, suggestSplitPoint.ComparisonKind.GetOpposed(), suggestSplitPoint.SplitValue, suggestSplitPoint.AttributeIndex)
+                                new SplitDecisionNode(Tree, root, suggestSplitPoint.Left, suggestSplitPoint.ComparisonKind, suggestSplitPoint.SplitValue, suggestSplitPoint.AttributeIndex),
+                                new SplitDecisionNode(Tree, root, suggestSplitPoint.Right, suggestSplitPoint.ComparisonKind.GetOpposed(), suggestSplitPoint.SplitValue, suggestSplitPoint.AttributeIndex)
                             };
 
             root.Branches.AttributeIndex = suggestSplitPoint.AttributeIndex;
@@ -212,9 +185,9 @@ namespace OCCST.Algorithm
                 var tempTresholds = thresholds.Copy();
 
                 tempTresholds[suggestSplitPoint.AttributeIndex]
-                    = tempTresholds[suggestSplitPoint.AttributeIndex].Remove(child.Comparison, suggestSplitPoint.SplitValue);
+                    = tempTresholds[suggestSplitPoint.AttributeIndex].GetVeryfied(child.Comparison, suggestSplitPoint.SplitValue);
 
-                Split(child, fulfillingInputs, fulfillingValidation, tempTresholds, height + 1, attributeUsage.Copy());
+                Split(child, fulfillingInputs, fulfillingValidation, tempTresholds, height + 1, null);
             }
         }
     }
