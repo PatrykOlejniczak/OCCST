@@ -1,4 +1,5 @@
-﻿using Accord.MachineLearning.DecisionTrees;
+﻿using System.Linq;
+using Accord.MachineLearning.DecisionTrees;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OCCST.Algorithm;
 using OCCST.Algorithm.Models;
@@ -12,6 +13,7 @@ namespace OCCST.Tests
         private DecisionVariable[] attributes;
         private double[][] learn;
         private double[][] validation;
+        private int[] validationOutput;
 
         [TestInitialize]
         public void Initialize()
@@ -33,6 +35,17 @@ namespace OCCST.Tests
                 new double[] { 5, 1 }, new double[] { 5, 2 }, new double[] { 5, 3 }, new double[] { 5, 4 }, new double[] { 5, 5 }, new double[] { 5, 6 }, new double[] { 5, 7 },new double[] { 5, 8 },
                 new double[] { 6, 1 }, new double[] { 6, 2 }, new double[] { 6, 3 }, new double[] { 6, 4 }, new double[] { 6, 5 }, new double[] { 6, 6 }, new double[] { 6, 7 },new double[] { 6, 8 },
                 new double[] { 7, 1 }, new double[] { 7, 2 }, new double[] { 7, 3 }, new double[] { 7, 4 }, new double[] { 7, 5 }, new double[] { 7, 6 }, new double[] { 7, 7 },new double[] { 7, 8 }
+            };
+
+            validationOutput = new int[]
+            {
+                1, 1, 1, 1, 1, 1, 1, 1,
+                1, 1, 1, 1, 1, 1, 1, 1,
+                1, 1, 0, 1, 1, 1, 1, 1,
+                1, 1, 0, 0, 1, 1, 1, 1,
+                1, 1, 0, 0, 0, 1, 1, 1,
+                1, 1, 0, 0, 0, 0, 1, 1,
+                1, 1, 0, 0, 0, 0, 0, 1,
             };
 
             learn = new[]
@@ -80,6 +93,12 @@ namespace OCCST.Tests
             Assert.AreEqual(1, tree.Root.Branches[0].Branches[0].Branches[0].Branches.Count);
             Assert.AreEqual(12, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Output);
             Assert.AreEqual(3, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Output);
+
+            int[] actual = tree.Decide(validation)
+                               .Select(val => val > 0 ? 0 : 1)
+                               .ToArray();
+
+            var confusionMatrix = new Accord.Statistics.Analysis.ConfusionMatrix(actual, validationOutput, 0, 1);
         }
 
         [TestMethod]
@@ -100,6 +119,12 @@ namespace OCCST.Tests
             Assert.AreEqual(9, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Output);
             Assert.AreEqual(1, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Branches[0].Output);
             Assert.AreEqual(2, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Branches[1].Output);
+
+            int[] actual = tree.Decide(validation)
+                               .Select(val => val > 0 ? 0 : 1)
+                               .ToArray();
+
+            var confusionMatrix = new Accord.Statistics.Analysis.ConfusionMatrix(actual, validationOutput, 0, 1);
         }
 
         [TestMethod]
@@ -121,6 +146,12 @@ namespace OCCST.Tests
             Assert.AreEqual(9, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Output);
             Assert.AreEqual(1, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Branches[0].Output);
             Assert.AreEqual(2, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Branches[1].Output);
+
+            int[] actual = tree.Decide(validation)
+                               .Select(val => val > 0 ? 0 : 1)
+                               .ToArray();
+
+            var confusionMatrix = new Accord.Statistics.Analysis.ConfusionMatrix(actual, validationOutput, 0, 1);
         }
     }
 }

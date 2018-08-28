@@ -75,14 +75,14 @@ namespace OCCST
                         }
 
                         int[] actual = decisionTree.Decide(dataStorage.TestInputDataSet)
-                                                   .Select(val => val > dataStorage.LearnDataSet.Length * 0.1 ? 0 : 1)
+                                                   .Select(val => val > 0 ? 0 : 1)
                                                    .ToArray();
 
                         var confusionMatrix = new Accord.Statistics.Analysis.ConfusionMatrix(actual, dataStorage.TestOutputDataSet, 0, 1);
 
                         var validationPropablity =
                             (double)decisionTree.Decide(dataStorage.ValidationDataSet)
-                                                .Count(val => val > dataStorage.LearnDataSet.Length * 0.1) / dataStorage.ValidationDataSet.Length;
+                                                .Count(val => val > 0) / dataStorage.ValidationDataSet.Length;
 
                         experiment["in_test_examples"] = dataStorage.TestOutputDataSet.Length;
                         experiment["in_test_positives"] = confusionMatrix.ActualPositives;
@@ -99,8 +99,8 @@ namespace OCCST
                         experiment["out_fScore"] = confusionMatrix.FScore;
                         experiment["out_jaccardIndex"] =
                             (double)confusionMatrix.TruePositives / (confusionMatrix.TruePositives +
-                                                                      confusionMatrix.FalseNegatives +
-                                                                      confusionMatrix.FalsePositives);
+                                                                     confusionMatrix.FalseNegatives +
+                                                                     confusionMatrix.FalsePositives);
 
                         experiment["out_falsePositives"] = confusionMatrix.FalsePositives;
                         experiment["out_falseNegatives"] = confusionMatrix.FalseNegatives;
