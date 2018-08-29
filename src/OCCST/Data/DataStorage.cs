@@ -20,16 +20,9 @@ namespace OCCST.Data
         public DataStorage(string learnDataSetPath,
             string validationDataSetPath, string testDataSetPath)
         {
-            try
-            {
-                LearnDataSet = LoadDataSet(learnDataSetPath, loadOnlyPositives: true, loadDecisionVariables: true);
-                ValidationDataSet = LoadDataSet(validationDataSetPath);
-                TestInputDataSet = LoadDataSet(testDataSetPath, loadOutput: true);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Something went wrong when loading files.");
-            }
+            LearnDataSet = LoadDataSet(learnDataSetPath, loadOnlyPositives: true, loadDecisionVariables: true);
+            ValidationDataSet = LoadDataSet(validationDataSetPath);
+            TestInputDataSet = LoadDataSet(testDataSetPath, loadOutput: true);
         }
 
         private double[][] LoadDataSet(string path, bool loadOnlyPositives = false, bool loadDecisionVariables = false,

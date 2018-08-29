@@ -24,7 +24,7 @@ namespace OCCST
 
         private static void Main(string[] args)
         {
-            var culture = (System.Globalization.CultureInfo) Thread.CurrentThread.CurrentCulture.Clone();
+            var culture = (System.Globalization.CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
             culture.NumberFormat.NumberDecimalSeparator = ".";
             Thread.CurrentThread.CurrentCulture = culture;
 
@@ -34,16 +34,23 @@ namespace OCCST
 
         private static void RunExperiment(ExperimentSettings settings)
         {
-            GlobalVariables.Dimensions = settings.Dimensions;
-            GlobalVariables.GrowCondition = new GrowCondition(
-                settings.MaxDecisionTreeHeight, settings.MaxAttributeUsage, settings.MinLeafSize);
+            try
+            {
+                GlobalVariables.Dimensions = settings.Dimensions;
+                GlobalVariables.GrowCondition = new GrowCondition(
+                    settings.MaxDecisionTreeHeight, settings.MaxAttributeUsage, settings.MinLeafSize);
 
-            dataStorage = new DataStorage(
-                settings.LearnFilePath, settings.ValidationFilePath, settings.TestFilePath);
+                dataStorage = new DataStorage(
+                    settings.LearnFilePath, settings.ValidationFilePath, settings.TestFilePath);
 
-            LearnDecisionTree();
+                LearnDecisionTree();
 
-            CalculateStatistics(settings);
+                CalculateStatistics(settings);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Something went wrong.");
+            }
         }
 
         private static void LearnDecisionTree()
