@@ -21,7 +21,7 @@ namespace OCCST.Extensions
             var first = true;
 
             // Get postive rules only
-            var positiveRules = rules.FindAll(x => x.Class == 1);
+            var positiveRules = rules.FindAll(x => x.Class > 0);
 
             if (positiveRules.Count == 0)
             {
