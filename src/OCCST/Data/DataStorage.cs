@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using Accord.IO;
 using Accord.Math;
@@ -19,9 +20,16 @@ namespace OCCST.Data
         public DataStorage(string learnDataSetPath,
             string validationDataSetPath, string testDataSetPath)
         {
-            LearnDataSet = LoadDataSet(learnDataSetPath, loadOnlyPositives: true, loadDecisionVariables: true);
-            ValidationDataSet = LoadDataSet(validationDataSetPath);
-            TestInputDataSet = LoadDataSet(testDataSetPath, loadOutput: true);
+            try
+            {
+                LearnDataSet = LoadDataSet(learnDataSetPath, loadOnlyPositives: true, loadDecisionVariables: true);
+                ValidationDataSet = LoadDataSet(validationDataSetPath);
+                TestInputDataSet = LoadDataSet(testDataSetPath, loadOutput: true);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Something went wrong when loading files.");
+            }
         }
 
         private double[][] LoadDataSet(string path, bool loadOnlyPositives = false, bool loadDecisionVariables = false,
