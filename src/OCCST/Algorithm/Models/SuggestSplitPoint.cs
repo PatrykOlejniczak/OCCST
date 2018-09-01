@@ -23,11 +23,10 @@ namespace OCCST.Algorithm.Models
 
         internal bool IsBetterThanParent(DecisionNode parent)
         {
-            //var betterBranch = Left.MeasureValue > Right?.MeasureValue ? Left.MeasureValue : Right.MeasureValue;
             var betterBranch = Left.MeasureValue + Right.MeasureValue;
 
             return parent is SplitDecisionNode node
-                   &&
+                        &&
                    betterBranch - node.SplitInformation.MeasureValue > 0.1;
         }
 
@@ -35,8 +34,6 @@ namespace OCCST.Algorithm.Models
         {
             var betterBranch = Left.MeasureValue + Right.MeasureValue;
             var betterOtherBranch = other.Left.MeasureValue + other.Right.MeasureValue;
-            //var betterBranch = Left.MeasureValue > Right.MeasureValue ? Left.MeasureValue : Right.MeasureValue;
-            //var betterOtherBranch = other.Left.MeasureValue > other.Right.MeasureValue ? other.Left.MeasureValue : other.Right.MeasureValue;
 
             return betterBranch - betterOtherBranch > 0.1;
         }

@@ -74,6 +74,15 @@ namespace OCCST.Tests
             Assert.AreEqual(1, tree.Root.Branches[0].Branches[0].Branches[0].Branches.Count);
             Assert.AreEqual(learn.Length, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Output);
             Assert.IsTrue(tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].IsLeaf);
+
+            int[] actual = tree.Decide(validation)
+                               .Select(val => val > 0 ? 0 : 1)
+                               .ToArray();
+
+            var areaSize = (double)tree.Decide(validation)
+                                       .Count(val => val > 0) / validation.Length;
+
+            var confusionMatrix = new Accord.Statistics.Analysis.ConfusionMatrix(actual, validationOutput, 0, 1);
         }
 
 
@@ -97,6 +106,9 @@ namespace OCCST.Tests
             int[] actual = tree.Decide(validation)
                                .Select(val => val > 0 ? 0 : 1)
                                .ToArray();
+
+            var areaSize = (double)tree.Decide(validation)
+                                       .Count(val => val > 0) / validation.Length;
 
             var confusionMatrix = new Accord.Statistics.Analysis.ConfusionMatrix(actual, validationOutput, 0, 1);
         }
@@ -124,6 +136,9 @@ namespace OCCST.Tests
                                .Select(val => val > 0 ? 0 : 1)
                                .ToArray();
 
+            var areaSize = (double)tree.Decide(validation)
+                                       .Count(val => val > 0) / validation.Length;
+
             var confusionMatrix = new Accord.Statistics.Analysis.ConfusionMatrix(actual, validationOutput, 0, 1);
         }
 
@@ -150,6 +165,39 @@ namespace OCCST.Tests
             int[] actual = tree.Decide(validation)
                                .Select(val => val > 0 ? 0 : 1)
                                .ToArray();
+
+            var areaSize = (double)tree.Decide(validation)
+                                       .Count(val => val > 0) / validation.Length;
+
+            var confusionMatrix = new Accord.Statistics.Analysis.ConfusionMatrix(actual, validationOutput, 0, 1);
+        }
+
+        [TestMethod]
+        public void DecisionTreeLearn_MinLeafSizeParameter()
+        {
+            GlobalVariables.GrowCondition = new GrowCondition(minLeafSize: 3);
+
+            var synthesisTree = new SynthesisTreeLearn(attributes, learn, validation);
+            synthesisTree.Learn();
+
+            var tree = synthesisTree.Tree;
+
+            Assert.AreEqual(1, tree.Root.Branches.Count);
+            Assert.AreEqual(1, tree.Root.Branches[0].Branches.Count);
+            Assert.AreEqual(1, tree.Root.Branches[0].Branches[0].Branches.Count);
+            Assert.AreEqual(1, tree.Root.Branches[0].Branches[0].Branches[0].Branches.Count);
+            Assert.AreEqual(3, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Output);
+            Assert.AreEqual(0, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Output);
+            Assert.AreEqual(9, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Output);
+            Assert.AreEqual(0, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Branches[0].Output);
+            Assert.AreEqual(3, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Branches[1].Output);
+
+            int[] actual = tree.Decide(validation)
+                               .Select(val => val > 0 ? 0 : 1)
+                               .ToArray();
+
+            var areaSize = (double)tree.Decide(validation)
+                               .Count(val => val > 0) / validation.Length;
 
             var confusionMatrix = new Accord.Statistics.Analysis.ConfusionMatrix(actual, validationOutput, 0, 1);
         }

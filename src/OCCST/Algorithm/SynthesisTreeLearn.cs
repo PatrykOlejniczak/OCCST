@@ -135,6 +135,23 @@ namespace OCCST.Algorithm
                                                                     splitInformationLeft,
                                                                     splitInformationRight);
 
+                    // Check 1. both braches have correct size 2. left branch has correct size and right is 0 3. right branch has correct size and left is 0
+                    if (GlobalVariables.GrowCondition.MinLeafSize.HasValue
+                            &&
+                        !((splitInformationLeft.ConfusionMatrix.TruePositives >= GlobalVariables.GrowCondition.MinLeafSize.Value
+                            &&
+                         splitInformationRight.ConfusionMatrix.TruePositives >= GlobalVariables.GrowCondition.MinLeafSize.Value)
+                            ||
+                        (splitInformationLeft.ConfusionMatrix.TruePositives >= GlobalVariables.GrowCondition.MinLeafSize.Value
+                            &&
+                         splitInformationRight.ConfusionMatrix.TruePositives == 0)
+                            ||
+                        (splitInformationRight.ConfusionMatrix.TruePositives >= GlobalVariables.GrowCondition.MinLeafSize.Value
+                            &&
+                         splitInformationLeft.ConfusionMatrix.TruePositives == 0)))
+                    {
+                        continue;
+                    }
 
                     var parentSize = splitInformationLeft.ConfusionMatrix.TruePositives
                                      + splitInformationRight.ConfusionMatrix.TruePositives;

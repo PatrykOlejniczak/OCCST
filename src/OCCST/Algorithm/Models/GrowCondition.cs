@@ -4,13 +4,13 @@
     {
         public int? MaxTreeHeight { get; }
         public int? MaxAttributeUsage { get; }
-        public int? MinParentSizePercent { get; }
+        public int? MinLeafSize { get; }
 
-        public GrowCondition(int? maxTreeHeight = null, int? maxAttributeUsage = null, int? minParentSizePercent = null)
+        public GrowCondition(int? maxTreeHeight = null, int? maxAttributeUsage = null, int? minLeafSize = null)
         {
             this.MaxTreeHeight = maxTreeHeight;
             this.MaxAttributeUsage = maxAttributeUsage;
-            this.MinParentSizePercent = minParentSizePercent;
+            this.MinLeafSize = minLeafSize;
         }
     }
 }

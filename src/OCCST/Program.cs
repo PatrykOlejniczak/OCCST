@@ -88,8 +88,8 @@ namespace OCCST
                         var confusionMatrix = new Accord.Statistics.Analysis.ConfusionMatrix(actual, dataStorage.TestOutputDataSet, 0, 1);
 
                         var validationPropablity =
-                            (double)decisionTree.Decide(dataStorage.ValidationDataSet)
-                                                .Count(val => val > 0) / dataStorage.ValidationDataSet.Length;
+                                (double)decisionTree.Decide(dataStorage.ValidationDataSet)
+                                                    .Count(val => val > 0) / dataStorage.ValidationDataSet.Length;
 
                         experiment["in_test_examples"] = dataStorage.TestOutputDataSet.Length;
                         experiment["in_test_positives"] = confusionMatrix.ActualPositives;

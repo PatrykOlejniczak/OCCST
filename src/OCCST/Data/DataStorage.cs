@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Accord.IO;
+using Accord.MachineLearning.DecisionTrees;
+using Accord.Math;
 using System.Collections.Generic;
 using System.Data;
-using Accord.IO;
-using Accord.Math;
 using System.IO;
 using System.Linq;
-using Accord.MachineLearning.DecisionTrees;
 
 namespace OCCST.Data
 {
