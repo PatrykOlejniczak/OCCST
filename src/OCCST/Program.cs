@@ -75,6 +75,7 @@ namespace OCCST
 
                         experiment["out_totalTime"] = timer.ElapsedMilliseconds;
                         experiment["out_decisionTreeHeight"] = decisionTree.GetHeight();
+                        experiment["in_terms"] = dataStorage.TestInputDataSet[0].Length;
 
                         if (decisionTree == null)
                         {
