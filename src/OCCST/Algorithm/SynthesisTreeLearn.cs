@@ -1,4 +1,5 @@
-﻿using Accord.MachineLearning.DecisionTrees;
+﻿using System.Linq;
+using Accord.MachineLearning.DecisionTrees;
 using Accord.Math;
 using OCCST.Algorithm.Calculators;
 using OCCST.Algorithm.Models;
@@ -36,7 +37,7 @@ namespace OCCST.Algorithm
         {
             var root = Tree.Root = new DecisionNode(Tree);
             var thresholds = ThresholdsCalculator.Calculate(inputs);
-
+            
             for (int attributeIndex = 0; attributeIndex < GlobalVariables.Dimensions; attributeIndex++)
             {
                 var min = thresholds[attributeIndex].Min();
@@ -95,7 +96,13 @@ namespace OCCST.Algorithm
                 root = maxNode;
             }
 
-            Split(root, inputs, validationInputs, thresholds, root.GetHeight(), null);
+            int[] maxAttributeUsage = null;
+            if (GlobalVariables.GrowCondition.MaxAttributeUsage.HasValue)
+            {
+                maxAttributeUsage = Enumerable.Repeat(GlobalVariables.GrowCondition.MaxAttributeUsage.Value, thresholds.Length).ToArray();
+            }
+
+            Split(root, inputs, validationInputs, thresholds, root.GetHeight(), maxAttributeUsage);
         }
 
         private void Split(DecisionNode root, double[][] inputs, double[][] validationInputs, double[][] thresholds, int height, int[] attributeUsage)
@@ -135,7 +142,7 @@ namespace OCCST.Algorithm
                                                                     splitInformationLeft,
                                                                     splitInformationRight);
 
-                    // Check 1. both braches have correct size 2. left branch has correct size and right is 0 3. right branch has correct size and left is 0
+                    // Check 1. both braches have correct size, 2. left branch has correct size and right is 0, 3. right branch has correct size and left is 0,
                     if (GlobalVariables.GrowCondition.MinLeafSize.HasValue
                             &&
                         !((splitInformationLeft.ConfusionMatrix.TruePositives >= GlobalVariables.GrowCondition.MinLeafSize.Value
@@ -204,7 +211,7 @@ namespace OCCST.Algorithm
                 tempTresholds[suggestSplitPoint.AttributeIndex]
                     = tempTresholds[suggestSplitPoint.AttributeIndex].GetVeryfied(child.Comparison, suggestSplitPoint.SplitValue);
 
-                Split(child, fulfillingInputs, fulfillingValidation, tempTresholds, height + 1, null);
+                Split(child, fulfillingInputs, fulfillingValidation, tempTresholds, height + 1, attributeUsage?.Copy());
             }
         }
     }

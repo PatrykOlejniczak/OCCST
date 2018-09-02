@@ -201,5 +201,49 @@ namespace OCCST.Tests
 
             var confusionMatrix = new Accord.Statistics.Analysis.ConfusionMatrix(actual, validationOutput, 0, 1);
         }
+
+        [TestMethod]
+        public void DecisionTreeLearn_MaxAttributeUsageParameter()
+        {
+            GlobalVariables.GrowCondition = new GrowCondition(maxAttributeUsage: 1);
+
+            var synthesisTree = new SynthesisTreeLearn(attributes, learn, validation);
+            synthesisTree.Learn();
+
+            var tree = synthesisTree.Tree;
+
+            Assert.AreEqual(1, tree.Root.Branches.Count);
+            Assert.AreEqual(1, tree.Root.Branches[0].Branches.Count);
+            Assert.AreEqual(1, tree.Root.Branches[0].Branches[0].Branches.Count);
+            Assert.AreEqual(1, tree.Root.Branches[0].Branches[0].Branches[0].Branches.Count);
+            Assert.AreEqual(3, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Output);
+            Assert.AreEqual(9, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Output);
+
+            int[] actual = tree.Decide(validation)
+                .Select(val => val > 0 ? 0 : 1)
+                .ToArray();
+
+            var areaSize = (double)tree.Decide(validation)
+                               .Count(val => val > 0) / validation.Length;
+
+            var confusionMatrix = new Accord.Statistics.Analysis.ConfusionMatrix(actual, validationOutput, 0, 1);
+
+            GlobalVariables.GrowCondition = new GrowCondition(maxAttributeUsage: 2);
+
+            synthesisTree = new SynthesisTreeLearn(attributes, learn, validation);
+            synthesisTree.Learn();
+
+            tree = synthesisTree.Tree;
+
+            Assert.AreEqual(1, tree.Root.Branches.Count);
+            Assert.AreEqual(1, tree.Root.Branches[0].Branches.Count);
+            Assert.AreEqual(1, tree.Root.Branches[0].Branches[0].Branches.Count);
+            Assert.AreEqual(1, tree.Root.Branches[0].Branches[0].Branches[0].Branches.Count);
+            Assert.AreEqual(3, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Output);
+            Assert.AreEqual(0, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Output);
+            Assert.AreEqual(9, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Output);
+            Assert.AreEqual(1, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Branches[0].Output);
+            Assert.AreEqual(2, tree.Root.Branches[0].Branches[0].Branches[0].Branches[0].Branches[1].Branches[1].Output);
+        }
     }
 }
