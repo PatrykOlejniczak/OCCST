@@ -96,6 +96,9 @@ namespace OCCST
                         experiment["in_test_positives"] = confusionMatrix.ActualPositives;
                         experiment["in_test_negatives"] = confusionMatrix.ActualNegatives;
 
+                        experiment["in_learn_examples"] = dataStorage.LearnDataSet.Length;
+                        experiment["in_validation_examples"] = dataStorage.ValidationDataSet.Length;
+
                         experiment["out_accurancy"] = confusionMatrix.Accuracy;
                         experiment["out_error"] = confusionMatrix.Error;
                         experiment["out_sensitivity"] = confusionMatrix.Sensitivity;
